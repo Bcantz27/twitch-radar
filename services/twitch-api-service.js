@@ -27,19 +27,17 @@ class TwitchApi {
      */
     GetBroadcasterClips(id, optionalParams = {})
     {
-        let url = 'clips?broadcaster_id=' + id;
+        let url = 'clips';
 
-        if(optionalParams != {}){
-            var i;
-            for (i = 0; i < Object.keys(optionalParams).length; i++) {
-                let paramKey = Object.keys(optionalParams)[i];
-                let paramValue = Object.values(optionalParams)[i];
-                url = url + '&' + paramKey + '=' + paramValue;
+        let params = { 
+            params: {
+                broadcaster_id: id,
+                ...optionalParams
             }
         }
 
         return new Promise(function(resolve, reject){
-            AxiosInstance.MakeAxiosGetRequest(url)
+            AxiosInstance.MakeAxiosGetRequest(url, params)
             .then(function (response) {
                 resolve(response);
             })
