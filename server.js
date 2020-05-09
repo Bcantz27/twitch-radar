@@ -12,13 +12,13 @@ var env = process.env.NODE_ENV || "development";
 var config = require('./config/' + env + '.js');
 
 //Connect to Database
-mongoose.connect(config.db);
+mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
 
 //App configuration
 app.set('views', path.join(__dirname, 'layouts'));
 app.set('view engine', 'jade');
 //app.use(require('prerender-node').set('prerenderServiceUrl', '<new url>'));
-app.use(require("prerender-node").set('prerenderToken', 'FbmJpFz8bIO0C5NOP3D9'));
+app.use(require("prerender-node").set('prerenderToken', config.secret));
 app.use(session({ secret: config.secret, resave: true, saveUninitialized: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
