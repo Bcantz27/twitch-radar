@@ -11,6 +11,9 @@ var passport = require('passport');
 var env = process.env.NODE_ENV || "development";
 var config = require('./config/' + env + '.js');
 
+var Logger = require('./services/logging-service.js');
+var logger = new Logger().getInstance();
+
 //Connect to Database
 mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -35,4 +38,4 @@ require('./passport.js')(passport);
 app.use(require('./routes')(passport));
 
 app.listen(config.port);
-console.log("Server running on port " + config.port);
+logger.log('info','Server running on port ' + config.port);

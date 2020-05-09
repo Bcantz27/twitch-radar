@@ -8,6 +8,9 @@ var jade = require('jade');
 var fs = require('fs');
 var Utilities = {};
 
+var Logger = require('../../services/logging-service.js');
+var logger = new Logger().getInstance();
+
 var transporter = nodemailer.createTransport({
         service: config.mailer.service,
         auth: {
@@ -47,7 +50,8 @@ Utilities.sendEmailtoAll = function(subject, message) {
 	                // send mail with defined transport object
 	                transporter.sendMail(mailOptions, function(error, info) {
 	                    if (error) {
-	                        return console.log(error);
+                            logger.log('error',error);
+	                        return error;
 	                    }
 	                    return;
 	                });
@@ -73,7 +77,8 @@ Utilities.sendEmailtoUser = function(id, subject, message) {
                 // send mail with defined transport object
                 transporter.sendMail(mailOptions, function(error, info) {
                     if (error) {
-                        return console.log(error);
+                        logger.log('error',error);
+                        return error;
                     }
                     return;
                 });

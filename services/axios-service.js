@@ -2,6 +2,9 @@
 
 const axios = require('axios');
 
+var Logger = require('./logging-service.js');
+var logger = new Logger().getInstance();
+
 class AxiosHandler {
     constructor(baseUrl, defaultHeaders = {})
     {
@@ -17,13 +20,11 @@ class AxiosHandler {
             return new Promise(function(resolve, reject) {
                 AxiosInstanceCopy.get(url, data)
                 .then(function (response) {
-                  // handle success
-                  //console.log(response);
+                  logger.log('debug','Successful get request from ' + url, {res: response});
                   resolve(response);
                 })
                 .catch(function (error) {
-                  // handle error
-                  //console.log(error);
+                  logger.log('error', error);
                   reject(error);
                 });
             });
@@ -35,13 +36,11 @@ class AxiosHandler {
             return new Promise(function(resolve, reject) {
                 AxiosInstanceCopy.post(url, data)
                 .then(function (response) {
-                  // handle success
-                  //console.log(response);
+                  logger.log('debug','Successful post request from ' + url, {res: response});
                   resolve(response);
                 })
                 .catch(function (error) {
-                  // handle error
-                  //console.log(error);
+                  logger.log('error', error);
                   reject(error);
                 });
             });

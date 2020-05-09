@@ -6,8 +6,6 @@ var env = process.env.NODE_ENV || "development";
 var config = require('../../config/' + env + '.js');
 
 router.post('/verify', utils.ensureAuthenticated, function(req, res) {
-	//console.log(req.user.token);
-	//console.log(req.body.token);
 	if(req.user.token == req.body.token){
 	    User.update({
 	        _id: req.user._id

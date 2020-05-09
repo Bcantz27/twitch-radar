@@ -9,6 +9,9 @@ var env = process.env.NODE_ENV || "development";
 var config = require('./config/' + env + '.js');
 var utils = require("./routes/controllers/utilities.js");
 
+var Logger = require('./services/logging-service.js');
+var logger = new Logger().getInstance();
+
 // load up the user model
 var User = require('./models/User.js');
 var bcrypt = require('bcrypt-nodejs');
@@ -23,7 +26,7 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        console.log("Serialized " + user.name);
+        logger.log('debug',"Serialized " + user.name, user);
         done(null, user._id);
     });
 
@@ -32,7 +35,6 @@ module.exports = function(passport) {
             _id: id
         }, function(err, user) {
             if (user != null) {
-                //console.log("Deserialized " + user.name);
                 done(null, user);
             } else {
                 done(null, false);
@@ -50,7 +52,6 @@ module.exports = function(passport) {
             passReqToCallback: true // allows us to pass back the entire request to the callback
         },
         function(req, username, password, done) {
-            //console.log("Signup: " + username + " " + password + " " + req.body.email);
             User.findOne({
                 $or: [{
                     'name': username
@@ -60,10 +61,10 @@ module.exports = function(passport) {
             }, function(err, user) {
                 //User already exists
                 if (user != null) {
-                    console.log("Already exists");
+                    logger.log('debug'," Failed user create - username " + user.name + ' already exists');
                     return done(null, false);
                 } else {
-                    console.log("Creating");
+                    logger.log('info'," Creating user " + user.name);
                     var salt = bcrypt.genSaltSync(10);
                     var token = bcrypt.genSaltSync(10);
                     password = bcrypt.hashSync(password,salt);
@@ -86,22 +87,21 @@ module.exports = function(passport) {
     // LOCAL LOGIN =============================================================
     // =========================================================================
     passport.use('local-login', new LocalStrategy({
-            usernameField: 'username',
-            passwordField: 'password',
-            passReqToCallback: true
-        },
-        function(req, username, password, done) {
-            //console.log("Login: " + username + " " + password);
-            User.findOne({
-                'name': username
-            }, function(err, user) {
-                if (user) {
-                    return user.checkPassword(password, done);
-                } else {
-                    console.log('No user found with that name.');
-                    return done(null, false);
-                }
-            });
-        }));
+        usernameField: 'username',
+        passwordField: 'password',
+        passReqToCallback: true
+    },
+    function(req, username, password, done) {
+        User.findOne({
+            'name': username
+        }, function(err, user) {
+            if (user) {
+                return user.checkPassword(password, done);
+            } else {
+                logger.log('debug'," Failed user login - unknown username " + user.name);
+                return done(null, false);
+            }
+        });
+    }));
 
 };

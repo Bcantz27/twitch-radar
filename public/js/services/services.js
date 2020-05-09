@@ -7,7 +7,6 @@ angular.module('myApp').factory('Auth', ['$q', '$http', '$location', '$rootScope
 
         authService.requestUser = function() {
             var deferred = $q.defer();
-            console.log("Requesting User");
             $http.get('/auth/user').success(function(user) {
                 if (user) {
                     $rootScope.authUser = user;

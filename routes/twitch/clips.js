@@ -1,8 +1,11 @@
 var express = require('express');
-var util = require('util')
+var util = require('util');
 var router = express.Router();
 var env = process.env.NODE_ENV || "development";
 var config = require('../../config/' + env + '.js');
+
+var Logger = require('../../services/logging-service.js');
+var logger = new Logger().getInstance();
 
 var TwitchApi = require('../../services/twitch-api-service.js');
 

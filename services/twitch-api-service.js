@@ -3,6 +3,9 @@
 var env = process.env.NODE_ENV || "development";
 var config = require('../config/' + env + '.js');
 
+var Logger = require('./logging-service.js');
+var logger = new Logger().getInstance();
+
 const CLIENT_ID = config.strategies.twitch.clientID;
 const CLIENT_SECRET = config.strategies.twitch.clientSecret;
 const BASE_URL = config.strategies.twitch.baseURL;
@@ -13,7 +16,7 @@ const AxiosInstance = new AxiosHandler(BASE_URL, {'Client-ID': CLIENT_ID});
 class TwitchApi {
     constructor()
     {
-        console.log('Initialize Twitch Api');
+        logger.log('info','Initialize Twitch Api');
     }
 
     /**
