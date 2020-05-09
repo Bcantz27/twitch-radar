@@ -4,3 +4,5 @@
 config/
 
 package-lock.json
+
+logs.log

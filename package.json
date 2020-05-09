@@ -2,16 +2,18 @@
   "name": "TwitchRadar",
   "main": "server.js",
   "dependencies": {
-    "express": "~4.5.1",
-    "mongoose": "=>5.7.5",
-    "body-parser": "~1.4.2",
-    "method-override": ">=2.3.10",
+    "axios": "^0.19.2",
     "bcrypt-nodejs": "*",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
     "express-session": "*",
     "jade": "*",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.9.13",
     "nodemailer": "*",
     "passport": "*",
     "passport-local": "*",
-    "prerender-node": "*"
+    "prerender-node": "*",
+    "winston": "^3.2.1"
   }
 }
