@@ -16,4 +16,14 @@ router.get('/GetBroadcasterClips', function(req, res, next) {
     });
 });
 
+router.get('/GetGameClips', function(req, res, next) {
+    TwitchApi.GetGameClips(req.body.gameId, req.body.optionalParams)
+    .then(function (response) {
+        res.send(util.inspect(response.data.data));
+    })
+    .catch(function (error) {
+        next(error);
+    });
+});
+
 module.exports = router;

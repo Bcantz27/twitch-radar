@@ -23,7 +23,7 @@ class TwitchApi {
      * @param {type}   id               Broadcaster Id
      * @param {Object} optionalParams   Optional. Add additional optional query parameters Full list here: https://dev.twitch.tv/docs/api/reference#get-clips
 
-     * @return {JSON} Returns a json list of clip data
+     * @return {JSON} Returns a json list of clip data. Results are ordered by view count
      */
     GetBroadcasterClips(id, optionalParams = {})
     {
@@ -32,6 +32,68 @@ class TwitchApi {
         let params = { 
             params: {
                 broadcaster_id: id,
+                ...optionalParams
+            }
+        }
+
+        return new Promise(function(resolve, reject){
+            AxiosInstance.MakeAxiosGetRequest(url, params)
+            .then(function (response) {
+                resolve(response);
+            })
+            .catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    /**
+     * GetGameClips
+     *
+     * @alias GetGameClips
+     * @param {type}   id               Game Id
+     * @param {Object} optionalParams   Optional. Add additional optional query parameters Full list here: https://dev.twitch.tv/docs/api/reference#get-clips
+
+     * @return {JSON} Returns a json list of clip data. Results are ordered by view count
+     */
+    GetGameClips(id, optionalParams = {})
+    {
+        let url = 'clips';
+
+        let params = { 
+            params: {
+                game_id: id,
+                ...optionalParams
+            }
+        }
+
+        return new Promise(function(resolve, reject){
+            AxiosInstance.MakeAxiosGetRequest(url, params)
+            .then(function (response) {
+                resolve(response);
+            })
+            .catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    /**
+     * GetClips
+     *
+     * @alias GetGameClips
+     * @param {type}   id               Clip Id(s). This can also be an array of id's
+     * @param {Object} optionalParams   Optional. Add additional optional query parameters Full list here: https://dev.twitch.tv/docs/api/reference#get-clips
+
+     * @return {JSON} Returns a json list of clip data. Results are ordered by view count
+     */
+    GetClips(id, optionalParams = {})
+    {
+        let url = 'clips';
+
+        let params = { 
+            params: {
+                id: id,
                 ...optionalParams
             }
         }
