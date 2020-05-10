@@ -19,13 +19,6 @@ angular.module('myApp', ['ngRoute', 'ui.bootstrap', 'oc.lazyLoad'])
                 templateUrl: 'views/signup.html',
                 controller: 'AuthController'
             })
-            .when('/todo', {
-                templateUrl: 'views/todo.html',
-                controller: 'ToDoController',
-                resolve: {
-                    factory: checkRouting("user")
-                }
-            })
             .when('/verify', {
                 templateUrl: 'views/verify.html',
                 controller: 'VerificationController',

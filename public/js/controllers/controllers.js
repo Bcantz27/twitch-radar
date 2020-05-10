@@ -100,49 +100,6 @@ app.controller('VerificationController', ['$scope', 'Auth', '$http','$routeParam
     }
 ]);
 
-app.controller('ToDoController', ['$scope', '$http',
-    function($scope, $http) {
-        var refresh = function() {
-            $http.get('/api/todo/all').success(function(res) {
-                $scope.todolist = res;
-            });
-        }
-        refresh();
-
-        $scope.addTask = function() {
-            if ($scope.task.name != "") {
-                $http.post('/api/todo/task', $scope.task).success(function(res) {
-                    $scope.task = "";
-                    $scope.todolist = res;
-                    refresh();
-                });
-            }
-        };
-
-        $scope.marktaskdone = function(id) {
-            $http.post('/api/todo/done/' + id).success(function(res) {
-                $scope.todolist = res;
-                refresh();
-            });
-        };
-
-        $scope.marktasknotdone = function(id) {
-            $http.post('/api/todo/notdone/' + id).success(function(res) {
-                $scope.todolist = res;
-                refresh();
-            });
-        };
-
-        $scope.removetask = function(id) {
-            $http.delete('/api/todo/' + id).success(function(res) {
-                $scope.todolist = res;
-                refresh();
-            });
-        };
-
-    }
-]);
-
 app.controller('AccountController', ['$scope', 'Auth', '$http',
     function($scope, Auth, $http) {
         $scope.currentTab = 0;
