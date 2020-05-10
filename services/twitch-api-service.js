@@ -16,7 +16,7 @@ const AxiosInstance = new AxiosHandler(BASE_URL, {'Client-ID': CLIENT_ID});
 class TwitchApi {
     constructor()
     {
-        logger.log('info','Initialize Twitch Api');
+        logger.log('info','Initialized Twitch Api');
     }
 
     /**
@@ -38,6 +38,8 @@ class TwitchApi {
                 ...optionalParams
             }
         }
+
+        logger.log('verbose','Twitch Api - Call GetBroadcasterClips', params);
 
         return new Promise(function(resolve, reject){
             AxiosInstance.MakeAxiosGetRequest(url, params)
@@ -70,6 +72,8 @@ class TwitchApi {
             }
         }
 
+        logger.log('verbose','Twitch Api - Call GetGameClips', params);
+
         return new Promise(function(resolve, reject){
             AxiosInstance.MakeAxiosGetRequest(url, params)
             .then(function (response) {
@@ -100,6 +104,8 @@ class TwitchApi {
                 ...optionalParams
             }
         }
+
+        logger.log('verbose','Twitch Api - Call GetClips', params);
 
         return new Promise(function(resolve, reject){
             AxiosInstance.MakeAxiosGetRequest(url, params)

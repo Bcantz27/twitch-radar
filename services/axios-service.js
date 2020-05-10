@@ -16,11 +16,12 @@ class AxiosHandler {
 
         this.MakeAxiosGetRequest = function(url, data = {})
         {
+            logger.log('verbose','Making Get request to ' + baseUrl + url);
             var AxiosInstanceCopy = this.AxiosInstance;
             return new Promise(function(resolve, reject) {
                 AxiosInstanceCopy.get(url, data)
                 .then(function (response) {
-                  logger.log('debug','Successful get request from ' + url, {res: response});
+                  logger.log('verbose','Successful get request from ' + baseUrl + url);
                   resolve(response);
                 })
                 .catch(function (error) {
@@ -32,18 +33,19 @@ class AxiosHandler {
 
         this.MakeAxiosPostRequest = function(url, data = {})
         {
-            var AxiosInstanceCopy = this.AxiosInstance;
-            return new Promise(function(resolve, reject) {
-                AxiosInstanceCopy.post(url, data)
-                .then(function (response) {
-                  logger.log('debug','Successful post request from ' + url, {res: response});
-                  resolve(response);
-                })
-                .catch(function (error) {
-                  logger.log('error', error);
-                  reject(error);
-                });
-            });
+          logger.log('verbose','Making Post request to ' + baseUrl + url);
+          var AxiosInstanceCopy = this.AxiosInstance;
+          return new Promise(function(resolve, reject) {
+              AxiosInstanceCopy.post(url, data)
+              .then(function (response) {
+                logger.log('verbose','Successful post request from ' + baseUrl + url);
+                resolve(response);
+              })
+              .catch(function (error) {
+                logger.log('error', error);
+                reject(error);
+              });
+          });
         }
     }
 };
