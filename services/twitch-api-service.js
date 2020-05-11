@@ -23,33 +23,49 @@ class TwitchApi {
      * GetBroadcasterClips
      *
      * @alias GetBroadcasterClips
-     * @param {type}   id               Broadcaster Id
+     * @param {type}   name               Username/Channel Name
      * @param {Object} optionalParams   Optional. Add additional optional query parameters Full list here: https://dev.twitch.tv/docs/api/reference#get-clips
 
      * @return {JSON} Returns a json list of clip data. Results are ordered by view count
      */
-    GetBroadcasterClips(id, optionalParams = {})
+    GetBroadcasterClips(name, optionalParams = {})
     {
         let url = 'clips';
-
-        let params = { 
-            params: {
-                broadcaster_id: id,
-                ...optionalParams
-            }
-        }
-
-        logger.log('verbose','Twitch Api - Call GetBroadcasterClips', params);
-
+        let nameCopy = name;
+        let instance = this;
         return new Promise(function(resolve, reject){
-            AxiosInstance.MakeAxiosGetRequest(url, params)
+            instance.GetUsers(nameCopy)
             .then(function (response) {
-                resolve(response);
+                let results = response.data;
+
+                if(results.length == 0)
+                {
+                    logger.log('warn','Twitch Api - GetBroadcasterClips cound not find user with name: ' + name);
+                    reject();
+                }
+
+                let params = { 
+                    params: {
+                        broadcaster_id: results[0].id,
+                        ...optionalParams
+                    }
+                }
+
+                logger.log('verbose','Twitch Api - Call GetBroadcasterClips', params);
+                AxiosInstance.MakeAxiosGetRequest(url, params)
+                .then(function (response) {
+                    resolve(response);
+                })
+                .catch(function (error) {
+                    reject(error);
+                });
             })
             .catch(function (error) {
+                logger.log('error','Twitch Api - GetBroadcasterClips Error: ' + error);
                 reject(error);
             });
         });
+        
     }
 
     /**
@@ -117,6 +133,40 @@ class TwitchApi {
             });
         });
     }
-};
+
+    /**
+     * GetUser
+     *
+     * @alias GetUser
+     * @param {type}   names               Twitch usernames seperated by ,
+
+     * @return {JSON} Returns a json object containing the users information
+     */
+    GetUsers(names)
+    {
+        let url = 'users';
+
+        let params = { 
+            params: {
+                login: names
+            }
+        }
+
+        logger.log('verbose','Twitch Api - Call GetUser', params);
+
+        return new Promise(function(resolve, reject){
+            AxiosInstance.MakeAxiosGetRequest(url, params)
+            .then(function (response) {
+                resolve(response);
+            })
+            .catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
+
+}
+
 
 module.exports = new TwitchApi();
