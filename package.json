@@ -10,6 +10,7 @@
     "jade": "*",
     "method-override": "^3.0.0",
     "mongoose": "^5.9.13",
+    "neo4j-driver": "^4.0.2",
     "nodemailer": "*",
     "passport": "*",
     "passport-local": "*",
