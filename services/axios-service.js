@@ -22,7 +22,8 @@ class AxiosHandler {
                 AxiosInstanceCopy.get(url, data)
                 .then(function (response) {
                   logger.log('verbose','Successful get request from ' + baseUrl + url);
-                  resolve(response);
+                  logger.log('debug','Response: ' + JSON.stringify(response.data, null, 2));
+                  resolve(response.data);
                 })
                 .catch(function (error) {
                   logger.log('error', error);
@@ -39,7 +40,8 @@ class AxiosHandler {
               AxiosInstanceCopy.post(url, data)
               .then(function (response) {
                 logger.log('verbose','Successful post request from ' + baseUrl + url);
-                resolve(response);
+                logger.log('debug','Response: ' + JSON.stringify(response.data, null, 2));
+                resolve(response.data);
               })
               .catch(function (error) {
                 logger.log('error', error);

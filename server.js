@@ -15,7 +15,7 @@ var Logger = require('./services/logging-service.js');
 var logger = new Logger().getInstance();
 
 //Connect to Database
-mongoose.connect(config.db, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(config.mongoDb.connectionString, { useNewUrlParser: true, useUnifiedTopology: true });
 logger.log('info','Initialized Mongo DB');
 
 //App configuration

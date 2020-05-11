@@ -10,9 +10,9 @@ var logger = new Logger().getInstance();
 var TwitchApi = require('../../services/twitch-api-service.js');
 
 router.get('/GetBroadcasterClips', function(req, res, next) {
-    TwitchApi.GetBroadcasterClips(req.body.broadcasterId, req.body.optionalParams)
+    TwitchApi.GetBroadcasterClips(req.body.broadcasterName, req.body.optionalParams)
     .then(function (response) {
-        res.send(util.inspect(response.data.data));
+        res.send(util.inspect(response.data));
     })
     .catch(function (error) {
         next(error);
@@ -22,7 +22,7 @@ router.get('/GetBroadcasterClips', function(req, res, next) {
 router.get('/GetGameClips', function(req, res, next) {
     TwitchApi.GetGameClips(req.body.gameId, req.body.optionalParams)
     .then(function (response) {
-        res.send(util.inspect(response.data.data));
+        res.send(util.inspect(response.data));
     })
     .catch(function (error) {
         next(error);
