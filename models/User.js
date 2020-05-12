@@ -5,6 +5,7 @@ var UserSchema = new mongoose.Schema({
   name: String,
   email: String,
   password: String,
+  twitchId: Number,
   verifiedEmail: {
     type: Boolean,
     default: false

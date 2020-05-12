@@ -11,7 +11,7 @@ const CLIENT_SECRET = config.strategies.twitch.clientSecret;
 const BASE_URL = config.strategies.twitch.baseURL;
 
 const AxiosHandler = require('./axios-service.js');
-const AxiosInstance = new AxiosHandler(BASE_URL, {'Client-ID': CLIENT_ID});
+const AxiosInstance = new AxiosHandler(BASE_URL, {'Client-ID': CLIENT_ID, 'Authorization': 'Bearer 903zjl98ck5gajhdoweydmmepzq9k1'});
 
 class TwitchApi {
     constructor()
@@ -160,6 +160,45 @@ class TwitchApi {
                 resolve(response);
             })
             .catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    GetUserFollowingList(name, optionalParams = {})
+    {
+        let url = 'users/follows';
+        let nameCopy = name;
+        let instance = this;
+        return new Promise(function(resolve, reject){
+            instance.GetUsers(nameCopy)
+            .then(function (response) {
+                let results = response.data;
+
+                if(results.length == 0)
+                {
+                    logger.log('warn','Twitch Api - GetUserFollowingList cound not find user with name: ' + name);
+                    reject();
+                }
+
+                let params = { 
+                    params: {
+                        from_id: results[0].id,
+                        ...optionalParams
+                    }
+                }
+
+                logger.log('verbose','Twitch Api - Call GetUserFollowingList', params);
+                AxiosInstance.MakeAxiosGetRequest(url, params)
+                .then(function (response) {
+                    resolve(response);
+                })
+                .catch(function (error) {
+                    reject(error);
+                });
+            })
+            .catch(function (error) {
+                logger.log('error','Twitch Api - GetUserFollowingList Error: ' + error);
                 reject(error);
             });
         });
