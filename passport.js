@@ -3,11 +3,19 @@ var https = require('https');
 
 // load all the things we need
 var LocalStrategy = require('passport-local').Strategy;
+var TwitchStrategy = require("passport-twitch.js").Strategy;
+
+var RecommendationEngineSingleton = require('./services/recommendation-engine-service.js');
+var RecommendationEngine = new RecommendationEngineSingleton().getInstance();
 
 //Load Config
 var env = process.env.NODE_ENV || "development";
 var config = require('./config/' + env + '.js');
 var utils = require("./routes/controllers/utilities.js");
+
+const TWITCH_CLIENT_ID = config.strategies.twitch.clientID;
+const TWITCH_CLIENT_SECRET = config.strategies.twitch.clientSecret;
+const TWITCH_CALLBACK_URL = config.strategies.twitch.callbackURL;
 
 var Logger = require('./services/logging-service.js');
 var logger = new Logger().getInstance();
@@ -103,5 +111,48 @@ module.exports = function(passport) {
             }
         });
     }));
+
+    // =========================================================================
+    // Twitch LOGIN/SIGNUP =============================================================
+    // =========================================================================
+    passport.use('twitch-login', new TwitchStrategy({
+        clientID: TWITCH_CLIENT_ID,
+        clientSecret: TWITCH_CLIENT_SECRET,
+        callbackURL: TWITCH_CALLBACK_URL,
+        scope: "user_read",
+        passReqToCallback : true
+      },
+      function(req, accessToken, refreshToken, profile, done) {
+        req.session.accessToken = accessToken;
+        req.session.refreshToken = refreshToken;
+
+        logger.log('verbose','Twitch login attempt by: ' + profile.login);
+        logger.log('debug','Profile: ' + JSON.stringify(profile, null, 2));
+        logger.log('debug','accessToken: ' + JSON.stringify(accessToken, null, 2));
+        logger.log('debug','refreshToken: ' + JSON.stringify(refreshToken, null, 2));
+
+        User.findOne({
+            'twitchId': profile.id
+        }, function(err, user) {
+            if (user) {
+                logger.log('verbose','User Logged In: ' + profile.login);
+                return done(err, user);
+            } else {
+                logger.log('verbose','Creating New User: ' + profile.login);
+                User.create({
+                    name: profile.login,
+                    twitchId: profile.id
+                }, function(err, newUser) {
+                    //Populate Graph data
+                    RecommendationEngine.CreateUserChannelNodes(profile.login)
+                    .then(function(res)
+                    {
+                        return done(err, newUser);
+                    });
+                });
+            }
+        });
+      }
+    ));
 
 };

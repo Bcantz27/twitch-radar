@@ -46,8 +46,8 @@ app.controller('AuthController', ['$scope', '$location', 'Auth', '$routeParams',
     }
 ]);
 
-app.controller('NavbarController', ['$scope', '$location', 'Auth',
-    function($scope, $location, Auth) {
+app.controller('NavbarController', ['$scope', '$window', '$location', 'Auth',
+    function($scope, $window, $location, Auth) {
 
         $scope.logout = function() {
             var promise = Auth.logout();
@@ -56,6 +56,12 @@ app.controller('NavbarController', ['$scope', '$location', 'Auth',
             }, function(status) { //Failed
 
             });
+        }
+
+        $scope.loginTwitch = function() {
+            console.log('Twitch Login');
+            var url = "http://" + $window.location.host + "/auth/twitch";
+            $window.location.href = url;
         }
 
         $scope.isUser = function(){
@@ -73,7 +79,7 @@ app.controller('NavbarController', ['$scope', '$location', 'Auth',
 ]);
 
 app.controller('MainController', ['$scope', 'Auth',
-    function($scope, Auth) {
+    function($scope, $window) {
 
     }
 ]);

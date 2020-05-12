@@ -23,7 +23,7 @@ const logger = winston.createLogger({
         winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`+(info.splat!==undefined?`${info.splat}`:" "))
     ), 
     transports: [
-      new winston.transports.File({ filename: 'logs.log', timestamp: true, format: winston.format.json() }),
+      new winston.transports.File({ filename: 'logs.log', timestamp: true, level: 'warn', format: winston.format.prettyPrint() }),
       new winston.transports.Console({})
     ]
 });

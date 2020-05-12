@@ -38,7 +38,7 @@ html(ng-app="myApp")
                             span.fa.fa-sign-out
                 ul.nav.navbar-nav.navbar-right(ng-if="$root.authUser == null")
                     li
-                        a.text-center(href="/login")  Login 
+                        a.text-center(href="" ng-click="loginTwitch()")  Login 
                             span.fa.fa-sign-in
                     li  
                         a.text-center(href="/signup")  Signup 
