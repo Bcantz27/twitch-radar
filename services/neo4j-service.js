@@ -20,13 +20,14 @@ class GraphDatabaseHandler {
 
     query(query, params = {})
     {
-        logger.log('verbose', 'Running Graph DB Query: ' + JSON.stringify(query, null, 2));
+        logger.log('debug', 'Running Graph DB Query: ' + JSON.stringify(query, null, 2));
         return new Promise(function(resolve, reject){
             var session = driver.session();
             session
             .run(query, params)
             .then(result => {
                 logger.log('debug', 'Records: ' + JSON.stringify(result, null, 2));
+                resolve(result);
             })
             .catch(error => {
                 logger.log('error', error);
