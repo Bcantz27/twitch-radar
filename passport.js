@@ -127,9 +127,9 @@ module.exports = function(passport) {
         req.session.refreshToken = refreshToken;
 
         logger.log('verbose','Twitch login attempt by: ' + profile.login);
-        logger.log('debug','Profile: ' + JSON.stringify(profile, null, 2));
-        logger.log('debug','accessToken: ' + JSON.stringify(accessToken, null, 2));
-        logger.log('debug','refreshToken: ' + JSON.stringify(refreshToken, null, 2));
+        logger.log('verbose','Profile: ' + JSON.stringify(profile, null, 2));
+        logger.log('verbose','accessToken: ' + JSON.stringify(accessToken, null, 2));
+        logger.log('verbose','refreshToken: ' + JSON.stringify(refreshToken, null, 2));
 
         User.findOne({
             'twitchId': profile.id

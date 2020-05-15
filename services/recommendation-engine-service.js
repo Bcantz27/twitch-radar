@@ -63,9 +63,9 @@ class RecommendationEngine {
                 for (i = 0; i < clips.data.length; i++) {
                     let clip = clips.data[i];
                     let clipTitle = clip.title;
-                    clipTitle.replace("\"","'");
+                    clipTitle = clipTitle.replace(/["]/g, "'");
                     await GraphDatabaseHandler.query(
-                        'MERGE (c:User { name: "' + userName + '", twitchId: "' + clip.broadcaster_id + '"}) MERGE (u:Clip { title: "' + clip.title + '", clipId: "' + clip.id + '", embedUrl: "' + clip.embed_url + '", url: "' + clip.url + '", viewCount: ' + clip.view_count + ', lang: "' + clip.language + '", createdAt: "' + clip.created_at + '"}) MERGE (c)-[:CREATED]-(u)');   
+                        'MERGE (c:User { name: "' + userName + '", twitchId: "' + clip.broadcaster_id + '"}) MERGE (u:Clip { title: "' + clipTitle + '", clipId: "' + clip.id + '", embedUrl: "' + clip.embed_url + '", url: "' + clip.url + '", viewCount: ' + clip.view_count + ', lang: "' + clip.language + '", createdAt: "' + clip.created_at + '", broadcasterName: "' + clip.broadcaster_name + '"}) MERGE (c)-[:CREATED]-(u)');   
                 }
 
                 logger.log('info','Done creating user clip data for: ' + userName);
@@ -101,6 +101,92 @@ class RecommendationEngine {
                 }
 
                 logger.log('info','Done creating ' + clipCount +' clips for ' + results.length + ' users');
+                resolve(results);
+            })
+            .catch(function(err){
+                logger.log('error','Error: ' + err);
+                reject(err);
+            });
+        });
+    }
+
+    async SetUserWatchedClip(username, clipId)
+    {
+        return new Promise(async function(resolve, reject){
+            if(username == "" || clipId == ""){
+                logger.log('warn','SetUserWatchedClip - Invalid username or clipId - Username: ' + username + ' ClipId: ' + clipId);
+                reject('Invalid username or clipId - Username: ' + username + ' ClipId: ' + clipId);
+            }
+
+            GraphDatabaseHandler.query('MATCH (u:User {name: "' + username + '"}) MATCH(c:Clip {clipId: "' + clipId + '"}) MERGE (u)-[:WATCHED]->(c)') // Set relationship
+            .then(async function(results){
+                results = results.records;
+                if(results.length == 0){
+                    logger.log('warn','CreateAllUserClipNodes - No users found.');
+                    resolve({});
+                }
+
+                logger.log('verbose','User watched clip - User: ' + username + ' Clip: ' + clipId.url + '');
+                resolve(results);
+            })
+            .catch(function(err){
+                logger.log('error','Error: ' + err);
+                reject(err);
+            });
+        });
+    }
+
+    async SetUserLikedClip(username, clipId)
+    {
+        return new Promise(async function(resolve, reject){
+            if(username == "" || clipId == ""){
+                logger.log('warn','SetUserWatchedClip - Invalid username or clipId - Username: ' + username + ' ClipId: ' + clipId);
+                reject('Invalid username or clipId - Username: ' + username + ' ClipId: ' + clipId);
+            }
+
+            GraphDatabaseHandler.query('MATCH (u:User {name: "' + username + '"}) MATCH(c:Clip {clipId: "' + clipId + '"}) MERGE (u)-[:LIKED]->(c)') // Set relationship
+            .then(async function(results){
+                results = results.records;
+                if(results.length == 0){
+                    logger.log('warn','CreateAllUserClipNodes - No users found.');
+                    resolve({});
+                }
+
+                logger.log('verbose','User watched clip - User: ' + username + ' Clip: ' + clipId.url + '');
+                resolve(results);
+            })
+            .catch(function(err){
+                logger.log('error','Error: ' + err);
+                reject(err);
+            });
+        });
+    }
+
+    async GetClipsByUserInterest(username, numberOfClips = 10, offset = 0)
+    {
+        let RecommendationEngineCopy = this;
+        return new Promise(async function(resolve, reject){
+            if(username == ""){
+                logger.log('warn','GetClipsByUserInterest - Invalid username - Username: ' + username);
+                reject('Invalid username  - Username: ' + username);
+            }
+
+            GraphDatabaseHandler.query(
+                'MATCH (u:User {name: "' + username + '"})-[:FOLLOWS]->(followedUser:User) ' +
+                'MATCH (c:Clip {broadcasterName: followedUser.name}) ' +
+                'WHERE NOT (u)-[:WATCHED]->(c) ' +
+                'RETURN c ' +
+                'ORDER BY c.viewCount DESC ' +
+                'SKIP ' + offset + ' ' +
+                'LIMIT ' + numberOfClips + '')
+            .then(async function(results){
+                results = results.records;
+                if(results.length == 0){
+                    logger.log('warn','GetClipsByUserInterest - No clips found user: ' + username);
+                    resolve({});
+                }
+
+                logger.log('verbose','GetClipsByUserInterest - Found ' + results.length + ' clips.');
                 resolve(results);
             })
             .catch(function(err){

@@ -62,4 +62,14 @@ router.post('/CreateAllUserClipNodes', function(req, res, next) {
     });
 });
 
+router.post('/GetClipsByUserInterest', function(req, res, next) {
+    RecommendationEngine.GetClipsByUserInterest(req.body.twitchName, req.body.clipAmount , req.body.clipOffset)
+    .then(function (results) {
+        res.send(results);
+    })
+    .catch(function (error) {
+        next(error);
+    });
+});
+
 module.exports = router;
