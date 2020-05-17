@@ -6,6 +6,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = require("mongoose");
 var passport = require('passport');
+var cors = require('cors');
 
 //Load Config
 var env = process.env.NODE_ENV || "development";
@@ -35,6 +36,8 @@ app.use(session({ secret: config.secret, resave: true, saveUninitialized: true }
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors())
+app.options('*', cors())
 logger.log('info','Initialized App Config');
 
 // required for passport
@@ -52,10 +55,12 @@ logger.log('info','Initialized Routes');
 app.listen(config.port);
 logger.log('info','Server Started on port ' + config.port);
 
+//Start up reset code - Testing
+/*
 User.deleteMany({ name: 'secretbryan' }, function (err) {
     if(err) logger.log('error', err);
     logger.log('info','Deleted secretbryan from mongoDb');
 });
 GraphDatabaseHandler.query('MATCH (u) DETACH DELETE u').then(function(res){
     logger.log('info','Deleted Graph');
-});
+});*/

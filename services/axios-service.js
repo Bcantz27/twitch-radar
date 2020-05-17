@@ -6,12 +6,26 @@ var Logger = require('./logging-service.js');
 var logger = new Logger().getInstance();
 
 class AxiosHandler {
-    constructor(baseUrl, defaultHeaders = {})
+    constructor(baseUrl, clientId, clientSecret)
     {
         this.AxiosInstance = axios.create({
             baseURL: baseUrl,
             timeout: 1000,
-            headers: defaultHeaders
+            headers: {
+              'Client-ID': clientId
+            }
+        });
+
+        let AxiosInstanceCopy = this.AxiosInstance;
+        this.AxiosInstance.post('https://id.twitch.tv/oauth2/token?client_id=' + clientId + '&client_secret=' + clientSecret + '&grant_type=client_credentials')
+        .then(function (response) {
+          logger.log('verbose','Set twitch access token');
+          //Set Access Token
+          AxiosInstanceCopy.defaults.headers['Authorization'] = 'Bearer ' + response.data.access_token;
+        })
+        .catch(function (error) {
+          logger.log('error', error);
+          reject(error);
         });
 
         this.MakeAxiosGetRequest = function(url, data = {})

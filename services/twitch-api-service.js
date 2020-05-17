@@ -11,7 +11,7 @@ const CLIENT_SECRET = config.strategies.twitch.clientSecret;
 const BASE_URL = config.strategies.twitch.baseURL;
 
 const AxiosHandler = require('./axios-service.js');
-const AxiosInstance = new AxiosHandler(BASE_URL, {'Client-ID': CLIENT_ID, 'Authorization': 'Bearer 903zjl98ck5gajhdoweydmmepzq9k1'});
+const AxiosInstance = new AxiosHandler(BASE_URL, CLIENT_ID, CLIENT_SECRET);
 
 class TwitchApi {
     constructor()
