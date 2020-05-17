@@ -72,4 +72,34 @@ router.post('/GetClipsByUserInterest', function(req, res, next) {
     });
 });
 
+router.post('/UserWatchedClip', function(req, res, next) {
+    RecommendationEngine.SetUserWatchedClip(req.body.twitchName, req.body.clipId)
+    .then(function (results) {
+        res.send(results);
+    })
+    .catch(function (error) {
+        next(error);
+    });
+});
+
+router.post('/UserLikedClip', function(req, res, next) {
+    RecommendationEngine.SetUserLikedClip(req.body.twitchName, req.body.clipId)
+    .then(function (results) {
+        res.send(results);
+    })
+    .catch(function (error) {
+        next(error);
+    });
+});
+
+router.post('/UserSawClip', function(req, res, next) {
+    RecommendationEngine.SetUserSawClip(req.body.twitchName, req.body.clipId)
+    .then(function (results) {
+        res.send(results);
+    })
+    .catch(function (error) {
+        next(error);
+    });
+});
+
 module.exports = router;

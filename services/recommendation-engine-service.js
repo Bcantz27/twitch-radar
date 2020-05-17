@@ -151,13 +151,27 @@ class RecommendationEngine {
 
             GraphDatabaseHandler.query('MATCH (u:User {name: "' + username + '"}) MATCH(c:Clip {clipId: "' + clipId + '"}) MERGE (u)-[:WATCHED]->(c)') // Set relationship
             .then(async function(results){
-                results = results.records;
-                if(results.length == 0){
-                    logger.log('warn','CreateAllUserClipNodes - No users found.');
-                    resolve({});
-                }
+                logger.log('verbose','User watched clip - User: ' + username + ' Clip: ' + clipId + '');
+                resolve(results);
+            })
+            .catch(function(err){
+                logger.log('error','Error: ' + err);
+                reject(err);
+            });
+        });
+    }
 
-                logger.log('verbose','User watched clip - User: ' + username + ' Clip: ' + clipId.url + '');
+    async SetUserSawClip(username, clipId)
+    {
+        return new Promise(async function(resolve, reject){
+            if(username == "" || clipId == ""){
+                logger.log('warn','SetUserWatchedClip - Invalid username or clipId - Username: ' + username + ' ClipId: ' + clipId);
+                reject('Invalid username or clipId - Username: ' + username + ' ClipId: ' + clipId);
+            }
+
+            GraphDatabaseHandler.query('MATCH (u:User {name: "' + username + '"}) MATCH(c:Clip {clipId: "' + clipId + '"}) MERGE (u)-[:SAW]->(c)') // Set relationship
+            .then(async function(results){
+                logger.log('verbose','User saw clip - User: ' + username + ' Clip: ' + clipId + '');
                 resolve(results);
             })
             .catch(function(err){
@@ -177,13 +191,7 @@ class RecommendationEngine {
 
             GraphDatabaseHandler.query('MATCH (u:User {name: "' + username + '"}) MATCH(c:Clip {clipId: "' + clipId + '"}) MERGE (u)-[:LIKED]->(c)') // Set relationship
             .then(async function(results){
-                results = results.records;
-                if(results.length == 0){
-                    logger.log('warn','CreateAllUserClipNodes - No users found.');
-                    resolve({});
-                }
-
-                logger.log('verbose','User watched clip - User: ' + username + ' Clip: ' + clipId.url + '');
+                logger.log('verbose','User watched clip - User: ' + username + ' Clip: ' + clipId + '');
                 resolve(results);
             })
             .catch(function(err){
@@ -193,9 +201,29 @@ class RecommendationEngine {
         });
     }
 
+    shuffleArray(array) 
+    {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+        
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+        
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+        
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+        }
+        
+        return array;
+    }
+
     async GetClipsByUserInterest(username, numberOfClips = 10, offset = 0)
     {
-        let RecommendationEngineCopy = this;
+        let thisCopy = this;
         return new Promise(async function(resolve, reject){
             if(username == ""){
                 logger.log('warn','GetClipsByUserInterest - Invalid username - Username: ' + username);
@@ -205,9 +233,10 @@ class RecommendationEngine {
             GraphDatabaseHandler.query(
                 'MATCH (u:User {name: "' + username + '"})-[:FOLLOWS]->(followedUser:User) ' +
                 'MATCH (c:Clip {broadcasterName: followedUser.name}) ' +
-                'WHERE NOT (u)-[:WATCHED]->(c) ' +
+                'WHERE NOT (u)-[:SAW]->(c) ' +
+                'WITH c,u, rand() AS number ' +
                 'RETURN c ' +
-                'ORDER BY c.viewCount DESC ' +
+                'ORDER BY number ' +
                 'SKIP ' + offset + ' ' +
                 'LIMIT ' + numberOfClips + '')
             .then(async function(results){
@@ -224,6 +253,8 @@ class RecommendationEngine {
                     clipList.push(results[i]._fields[0].properties);
                 }
 
+                clipList = thisCopy.shuffleArray(clipList);
+
                 logger.log('verbose','GetClipsByUserInterest - Found ' + clipList.length + ' clips.');
                 resolve(clipList);
             })
@@ -233,6 +264,8 @@ class RecommendationEngine {
             });
         });
     }
+
+    
 };
 
 class Singleton {

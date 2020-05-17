@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Jumbotron, Container, Button, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Row, Col } from 'reactstrap';
 import ClipStream from "../../components/ClipStream/ClipStream";
 
 class LandingPage extends Component {

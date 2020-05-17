@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch} from "react-router-dom"
 
-import {NavBar, Footer} from "../Core Elements";
+import {NavBar} from "../Core Elements";
 import Game from "../Game/Game";
 import LandingPage from "../../containers/LandingPage/LandingPage";
 

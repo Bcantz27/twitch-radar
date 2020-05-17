@@ -3,20 +3,17 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
-  NavbarBrand,
   Nav,
-  NavItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem } from 'reactstrap';
+  NavItem
+ } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 
 const NavBar = (props) => {
 
+  /*
   const logoStyle = {
     width: "100px",
-  };
+  };*/
   //<NavbarBrand href="/"><NavLink to="/" exact><img style={logoStyle} src="./images/logo.png"></img></NavLink></NavbarBrand>
   return (
     <div>
