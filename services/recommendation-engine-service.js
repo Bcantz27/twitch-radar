@@ -1,4 +1,5 @@
 'use strict';
+var util = require('util');
 
 var env = process.env.NODE_ENV || "development";
 var config = require('../config/' + env + '.js');
@@ -63,15 +64,45 @@ class RecommendationEngine {
                 for (i = 0; i < clips.data.length; i++) {
                     let clip = clips.data[i];
                     let clipTitle = clip.title;
-                    clipTitle = clipTitle.replace(/["]/g, "'");
+                    clipTitle = clipTitle.replace(/["]/g, "'"); // Remove quotes from titles
+
+                    //Get media url
+                    let mediaUrl = clip.thumbnail_url;
+                    mediaUrl = mediaUrl.match('([^\/]+$)')[0];
+                    let indexOfEnding = mediaUrl.indexOf('-preview') - 1;
+                    if(indexOfEnding < 0) {
+                        logger.log('warn','Could not find ending of media url ' + clip.thumbnail_url);
+                    }
+                    mediaUrl = mediaUrl.substring(0, indexOfEnding+1);
+                    mediaUrl = 'https://clips-media-assets2.twitch.tv/' + mediaUrl + '.mp4';
+
+                    logger.log('debug','Media url ' + mediaUrl);
+
+                    let clipData = {
+                        clipId: clip.id,
+                        url: clip.url,
+                        embedUrl: clip.embed_url,
+                        mediaUrl: mediaUrl,
+                        broadcasterId: clip.broadcaster_id,
+                        broadcasterName: clip.broadcaster_name,
+                        gameId: clip.game_id,
+                        lang: clip.language,
+                        viewCount: clip.view_count,
+                        createdAt: clip.created_at,
+                        thumbnailUrl: clip.thumbnail_url
+                    }
+
                     await GraphDatabaseHandler.query(
-                        'MERGE (c:User { name: "' + userName + '", twitchId: "' + clip.broadcaster_id + '"}) MERGE (u:Clip { title: "' + clipTitle + '", clipId: "' + clip.id + '", embedUrl: "' + clip.embed_url + '", url: "' + clip.url + '", viewCount: ' + clip.view_count + ', lang: "' + clip.language + '", createdAt: "' + clip.created_at + '", broadcasterName: "' + clip.broadcaster_name + '"}) MERGE (c)-[:CREATED]-(u)');   
+                        'MERGE (c:User { name: "' + userName + '", twitchId: "' + clip.broadcaster_id + '"}) ' +
+                        'MERGE (u:Clip { title: "' + clipTitle + '", clipId: "' + clip.id + '"}) ' + 
+                        'ON CREATE SET u += ' + util.inspect(clipData) + ' ' +
+                        'MERGE (c)-[:CREATED]-(u)');   
                 }
 
                 logger.log('info','Done creating user clip data for: ' + userName);
                 resolve(clips);
             } catch (err){
-                logger.log('error','Error: ' + err);
+                
                 reject(err);
             }
         });
@@ -186,8 +217,15 @@ class RecommendationEngine {
                     resolve({});
                 }
 
-                logger.log('verbose','GetClipsByUserInterest - Found ' + results.length + ' clips.');
-                resolve(results);
+                let clipList = [];
+                let i;
+                for(i = 0; i < results.length; i++)
+                {
+                    clipList.push(results[i]._fields[0].properties);
+                }
+
+                logger.log('verbose','GetClipsByUserInterest - Found ' + clipList.length + ' clips.');
+                resolve(clipList);
             })
             .catch(function(err){
                 logger.log('error','Error: ' + err);
