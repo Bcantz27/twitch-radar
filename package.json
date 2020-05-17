@@ -1,10 +1,18 @@
 {
   "name": "twitchradar",
   "main": "server.js",
+  "scripts": {
+    "client-install": "cd client && npm install",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
   "dependencies": {
     "axios": "^0.19.2",
     "bcrypt-nodejs": "*",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-session": "*",
     "jade": "*",
@@ -12,6 +20,7 @@
     "mongoose": "^5.9.13",
     "neo4j-driver": "^4.0.2",
     "nodemailer": "*",
+    "nodemon": "^2.0.4",
     "passport": "*",
     "passport-local": "*",
     "passport-twitch.js": "0.0.9",

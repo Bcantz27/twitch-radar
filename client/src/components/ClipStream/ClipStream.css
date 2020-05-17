@@ -1,0 +1,75 @@
+.left-panel
+{
+    width: 80%;
+    height: 100%;
+    background-color: white;
+}
+
+.left-panel iframe
+{
+    width: 100%;
+    height: 100%;
+}
+
+.right-panel
+{
+    width: 20%;
+    height: 100%;
+    background-color: white;
+    z-index: 1;
+}
+
+.right-btn
+{
+    position: absolute;
+    top: 50%;
+    right: 20%;
+    z-index: 2;
+    background-color: grey;
+    opacity: 0.5;
+}
+
+
+.right-btn:hover, .left-btn:hover
+{
+    opacity: 1;
+}
+
+.right-btn i, .left-btn i
+{
+    color: white;
+}
+
+.left-btn
+{
+    position: absolute;
+    top: 50%;
+    right: 98.2%;
+    z-index: 2;
+    background-color: grey;
+    opacity: 0.5;
+}
+
+html, body 
+{
+    height: 100%;
+    background-color: black;
+}
+
+.video-js
+{
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+.video-react-big-play-button
+{
+    display: none !important;
+}
+
+body
+{
+    position: fixed; 
+    overflow-y: scroll;
+    width: 100%;
+}
